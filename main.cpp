@@ -1,3 +1,12 @@
+/*
+ * Victor Hernández Pérez
+ * alu0100697032@ull.edu.es
+ * Grado en Ingeniería Informática
+ * Curso: Tercero
+ * Itinerario: Computación
+ * Diseño y Análisis de Algoritmos
+ */
+
 #include "RAM.h"
 
 int main() {

@@ -1,3 +1,12 @@
+/*
+ * Victor Hernández Pérez
+ * alu0100697032@ull.edu.es
+ * Grado en Ingeniería Informática
+ * Curso: Tercero
+ * Itinerario: Computación
+ * Diseño y Análisis de Algoritmos
+ */
+
 #include <iostream>
 #include <stdlib.h>
 #include <string>
@@ -14,10 +23,14 @@ private:
 	string expresion;
 public:
 
-	instruccion() {}             // Constructor por defecto
-	instruccion(string p, string n, string e); // En el caso de que la instruccion tenga etiqueta.
+	instruccion() {
+	}
+	instruccion(string p, string n, string e);//etiqueta, nombre instruccion, expresion
 	~instruccion();
-	instruccion& operator =(instruccion *p1); // MUY IMPORTANTE PARA PODER ASIGNAR VALORES AL VECTOR.
+	instruccion& operator =(instruccion *p1); //ASIGNAR VALORES AL VECTOR.
+	void mostrar();
+
+	//Getters
 	string GetpreEtiqueta() {
 		return preEtiqueta;
 	}
@@ -27,8 +40,6 @@ public:
 	string Getexpresion() {
 		return expresion;
 	}
-	void mostrar();
-
 };
 
 class RAM {

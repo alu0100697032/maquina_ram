@@ -1,19 +1,32 @@
-#include "RAM.h"
+/*
+ * Victor Hernández Pérez
+ * alu0100697032@ull.edu.es
+ * Grado en Ingeniería Informática
+ * Curso: Tercero
+ * Itinerario: Computación
+ * Diseño y Análisis de Algoritmos
+ */
 
+#include "RAM.h"
+/*
+ * CONSTRUCTOR INSTRUCCION
+ */
 instruccion::instruccion(string p, string n, string e) {
 
-	if (e.empty() == true) {
+	if (e.empty() == true) {//si no tiene etiqueta...
 		preEtiqueta.clear();
 		nombre = p;
 		expresion = n;
-	} else {
+	} else {				//si tiene etiqueta...
 		preEtiqueta = p;
 		nombre = n;
 		expresion = e;
 	}
 
 }
-
+/*
+ * DESTRUCTOR INSTRUCCION
+ */
 instruccion::~instruccion() {
 
 	preEtiqueta.clear();
@@ -21,7 +34,9 @@ instruccion::~instruccion() {
 	expresion.clear();
 
 }
-
+/*
+ * SOBRECARGA DEL OPERADOR =
+ */
 instruccion& instruccion::operator =(instruccion *p1) {
 
 	this->preEtiqueta = p1->preEtiqueta;
@@ -30,7 +45,9 @@ instruccion& instruccion::operator =(instruccion *p1) {
 
 	return *this;
 }
-
+/*
+ * MUESTRA INSTRUCCION
+ */
 void instruccion::mostrar() {
 
 	if (preEtiqueta.empty() == false)
@@ -38,7 +55,9 @@ void instruccion::mostrar() {
 	else
 		cout << nombre << " " << expresion << endl;
 }
-
+/*
+ * CONSTRUCTOR MAQUINA RAM
+ */
 RAM::RAM(const char* fichero) {
 
 	ifstream fin(fichero);
@@ -64,11 +83,11 @@ RAM::RAM(const char* fichero) {
 				string aux3;		//almacena tercer elemento (si es que hay)
 				//(Etiqueta, nombre, expreseión)
 
-				while (linea[i] == ' ')
+				while (linea[i] == ' ') //ignora espacios
 					i++;
 
 				while (linea[i] != ' ') {
-					if (linea[i] == ':') { // si encuentra los':' sale del bucle (encontro etiqueta).
+					if (linea[i] == ':') { // si encuentra ':' encontró etiqueta
 						i++;
 						break;
 					}
@@ -89,7 +108,6 @@ RAM::RAM(const char* fichero) {
 					i++;
 					if (linea[i] == '\0') // puede ocurrir que no haya mas que leer en la cadena.
 						break;
-
 				}
 
 				if (linea[i] != '\0') { 		//Si todavía hay más por leer...
@@ -114,12 +132,17 @@ RAM::RAM(const char* fichero) {
 	}
 
 }
+/*
+ * DESTRUCTOR MAQUINA RAM
+ */
 RAM::~RAM() {
 
 	delete[] programa;
 
 }
-
+/*
+ * MUESTRA EL PROGRAMA
+ */
 void RAM::mostrarCarga() {
 
 	for (int i = 0; i < 40; i++)
