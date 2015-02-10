@@ -54,15 +54,15 @@ RAM::RAM(const char* fichero) {
 		while (!fin.eof()) {
 			getline(fin, linea);
 
-			if (linea.length() == 0 || linea[0] == ';') // Ignora los comentarios realizando un salto de línea.
-				cout << "\n";
+			if (linea.length() == 0 || linea[0] == ';') // Ignoramos comentarios
+				continue;
 			else { 			// si la línea no es un comentario o no está vacía:
 
 				int i = 0;// Indicará por cual caracter del string "linea" va leyendo.
 				string aux1;			//almacena primer elemento
 				string aux2;			//almacena segundo elemento
 				string aux3;		//almacena tercer elemento (si es que hay)
-				//la idea es esperar como máximo 3 parametros. (Etiqueta, nombre y una expreseión.
+				//(Etiqueta, nombre, expreseión)
 
 				while (linea[i] == ' ')
 					i++;
@@ -101,22 +101,17 @@ RAM::RAM(const char* fichero) {
 							break;
 					}
 				}
-
-//-----------------------ALMACENAMIENTO DE LAS INSTRUCCIONES ----------------------------------------
-
+				//se almacena la instruccion
 				programa[contador] = new instruccion(aux1, aux2, aux3);
+				contador++;
+			}// end else (si lee otra cosa que no es comentario)
 
-//--------------------------FIN DEL ALMACENAMIENTO DE LAS INSTRUCCIONES-------------------------
+		}//fin de fichero
 
-				contador++;	//¡A por la siguiente línea!
-			}				// end else (si lee otra cosa que no es comentario)
-
-		} 						//fin de fichero
-
-	} else {						//Si no encuentra fichero:
+	} else {//Si no encuentra fichero:
 		cout << "Error, no se pudo cargar el archivo o no existe." << endl;
 		exit(0);
-	} 					// End cout ERROR. Saldrá del programa si no lo carga.
+	}
 
 }
 RAM::~RAM() {
