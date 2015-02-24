@@ -13,11 +13,12 @@
  */
 instruccion::instruccion(string p, string n, string e) {
 
-	if (n.empty() == true && e.empty() == true) {
-		preEtiqueta.clear();
-		expresion.clear();
-		nombre = p;
-	} else if (e.empty() == true) { //si no tiene etiqueta...
+	/*if (n.empty() == true && e.empty() == true) {
+	 preEtiqueta.clear();
+	 expresion.clear();
+	 nombre = p;
+	 } */
+	if (e.empty() == true) { //si no tiene etiqueta...
 		preEtiqueta.clear();
 		nombre = p;
 		expresion = n;
@@ -62,14 +63,14 @@ void instruccion::mostrar() {
 /*
  * CONSTRUCTOR MAQUINA RAM
  */
-RAM::RAM(const char* fichero) {
+RAM::RAM(const char* fichero, const char* c_e, string c_s) {
 
+	nombre_fichero_salida = c_s;
 	ifstream fin(fichero);
-
+	ifstream fin2(c_e);
 	string linea;					  	// Línea leida.
 	int contador = 0;    		// Némero de instrucción leída. (1º,2º...)
-	programa = new instruccion[40]; // Buscar forma dinámica para reservar memoria. Esto no es lo más eficiente.
-
+	//programa = new instruccion[40]; // Buscar forma dinámica para reservar memoria. Esto no es lo más eficiente.
 	if (fin.is_open()) {
 
 		getline(fin, linea);
@@ -93,7 +94,8 @@ RAM::RAM(const char* fichero) {
 				while (linea[i] != ' ') {
 					if (linea[i] == ':') { // si encuentra ':' encontró etiqueta
 						i++;
-						etiquetas[aux1] = contador;
+						//etiquetas[aux1] = contador;
+						etiquetas.insert(pair<string, int>(aux1, contador));
 						break;
 					}
 
@@ -127,86 +129,170 @@ RAM::RAM(const char* fichero) {
 					}
 				}
 				//se almacena la instruccion
-				programa[contador] = new instruccion(aux1, aux2, aux3);
+				instruccion aux(aux1, aux2, aux3);
+				programa.push_back(aux);
+				//programa[contador] = new instruccion(aux1, aux2, aux3);
 				contador++;
 			} 		// end else (si lee otra cosa que no es comentario)
-
 		} 		//fin de fichero
 
 	} else { 		//Si no encuentra fichero:
 		cout << "Error, no se pudo cargar el archivo o no existe." << endl;
 		exit(0);
 	}
+	if (fin2.is_open()) {
+		int aux;
+		while (!fin2.eof()) {
+			fin2 >> aux;
+			cinta_entrada.push_back(aux);
+		}
+	} else {
+		cout << "Error, no se pudo cargar el archivo o no existe." << endl;
+		exit(0);
+	}
 	rellenarMapaInstrucciones();
+	mostrarEtiquetas();
 }
 /*
  * DESTRUCTOR MAQUINA RAM
  */
 RAM::~RAM() {
 
-	delete[] programa;
+	programa.clear();
 
 }
 
-int RAM::ejecutar(int* cinta_entrada) {
+void RAM::ejecutar() {
 	bool parar = false;
 	int contador = 0;
 	int acumulador = 0;
 	int cabezal = 0;
+	string aux;
 	while (parar == false) {
 		if (programa[contador].GetpreEtiqueta().empty()) {
 			switch (instrucciones[programa[contador].Getnombre()]) {
 			case 1: { //LOAD
+				aux = programa[contador].Getexpresion();
 				if (programa[contador].Getexpresion()[0] == '=') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
+					aux.erase(0, 1);
+					acumulador = atoi(aux.c_str());
 				} else if (programa[contador].Getexpresion()[0] == '*') {
-					acumulador = cinta_entrada[cinta_entrada[int(
-							programa[contador].Getexpresion()[1])]];
+					aux.erase(0, 1);
+					acumulador = cinta_entrada[cinta_entrada[atoi(aux.c_str())
+							- 1]];
 				} else {
-					acumulador = cinta_entrada[int(
-							programa[contador].Getexpresion()[0])];
+					acumulador = cinta_entrada[atoi(aux.c_str()) - 1];
 				}
 				contador++;
 			}
 				break;
 			case 2: { //STORE
+				aux = programa[contador].Getexpresion();
 				if (programa[contador].Getexpresion()[0] == '*') {
-					cinta_entrada[cinta_entrada[cinta_entrada[int(
-							programa[contador].Getexpresion()[1])]]] =
+					aux.erase(0, 1);
+					cinta_entrada[cinta_entrada[atoi(aux.c_str()) - 1]] =
 							acumulador;
 				} else {
-					cinta_entrada[cinta_entrada[int(
-							programa[contador].Getexpresion()[1])]] =
-							acumulador;
+					cinta_entrada[atoi(aux.c_str()) - 1] = acumulador;
 				}
 				contador++;
 			}
 				break;
 			case 3: { //ADD
-
+				aux = programa[contador].Getexpresion();
+				if (programa[contador].Getexpresion()[0] == '=') {
+					aux.erase(0, 1);
+					acumulador += atoi(aux.c_str());
+				} else if (programa[contador].Getexpresion()[0] == '*') {
+					aux.erase(0, 1);
+					acumulador += cinta_entrada[cinta_entrada[atoi(aux.c_str())
+							- 1]];
+				} else {
+					acumulador += cinta_entrada[atoi(aux.c_str()) - 1];
+				}
+				contador++;
 			}
 				break;
 			case 4: { //SUB
-
+				aux = programa[contador].Getexpresion();
+				if (programa[contador].Getexpresion()[0] == '=') {
+					aux.erase(0, 1);
+					acumulador = acumulador - atoi(aux.c_str());
+				} else if (programa[contador].Getexpresion()[0] == '*') {
+					aux.erase(0, 1);
+					acumulador =
+							acumulador
+									- cinta_entrada[cinta_entrada[atoi(
+											aux.c_str()) - 1]];
+				} else {
+					acumulador = acumulador
+							- cinta_entrada[atoi(aux.c_str()) - 1];
+				}
+				contador++;
 			}
 				break;
 			case 5: { //MULT
-
+				aux = programa[contador].Getexpresion();
+				if (programa[contador].Getexpresion()[0] == '=') {
+					aux.erase(0, 1);
+					acumulador = acumulador * atoi(aux.c_str());
+				} else if (programa[contador].Getexpresion()[0] == '*') {
+					aux.erase(0, 1);
+					acumulador =
+							acumulador
+									* cinta_entrada[cinta_entrada[atoi(
+											aux.c_str()) - 1]];
+				} else {
+					acumulador = acumulador
+							* cinta_entrada[atoi(aux.c_str()) - 1];
+				}
+				contador++;
 			}
 				break;
 			case 6: { //DIV
+				aux = programa[contador].Getexpresion();
+				if (programa[contador].Getexpresion()[0] == '=') {
+					aux.erase(0, 1);
+					if (atoi(aux.c_str()) != 0)
+						acumulador = acumulador / atoi(aux.c_str());
+					else {
+						cout << "División entre 0. Error" << endl;
+						parar = true;
+					}
+				} else if (programa[contador].Getexpresion()[0] == '*') {
+					aux.erase(0, 1);
+					if (atoi(aux.c_str()) != 0)
+						acumulador = acumulador
+								/ cinta_entrada[cinta_entrada[atoi(aux.c_str())
+										- 1]];
+					else {
+						cout << "División entre 0. Error" << endl;
+						parar = true;
+					}
 
+				} else {
+					if (atoi(aux.c_str()) != 0)
+						acumulador = acumulador
+								/ cinta_entrada[atoi(aux.c_str()) - 1];
+					else {
+						cout << "División entre 0. Error" << endl;
+						parar = true;
+					}
+
+				}
+				contador++;
 			}
 				break;
 			case 7: { //READ
+				aux = programa[contador].Getexpresion();
 				if (programa[contador].Getexpresion()[0] == '*') {
+					aux.erase(0, 1);
 					cinta_entrada[cabezal + 1] =
-							cinta_entrada[cinta_entrada[int(
-									programa[contador].Getexpresion()[1])]];
+							cinta_entrada[cinta_entrada[atoi(aux.c_str()) - 1]];
 					cabezal++;
 				} else {
-					cinta_entrada[cabezal + 1] = cinta_entrada[int(
-							programa[contador].Getexpresion()[1])];
+					cinta_entrada[cabezal + 1] = cinta_entrada[atoi(aux.c_str())
+							- 1];
 					cabezal++;
 				}
 				contador++;
@@ -217,32 +303,22 @@ int RAM::ejecutar(int* cinta_entrada) {
 			}
 				break;
 			case 9: { //JUMP
-				if (programa[contador].Getexpresion()[0] == '=') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
-				} else if (programa[contador].Getexpresion()[0] == '*') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
-				} else if (int(programa[contador].Getexpresion()[0]) >= 0) {
-
-				}
+				/*aux = programa[contador].Getexpresion();
+				contador = etiquetas.find(aux)->second;*/
+				contador++;
 			}
 				break;
 			case 10: { //JGTZ
-				if (programa[contador].Getexpresion()[0] == '=') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
-				} else if (programa[contador].Getexpresion()[0] == '*') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
-				} else if (int(programa[contador].Getexpresion()[0]) >= 0) {
-
+				if (acumulador > 0) {
+					aux = programa[contador].Getexpresion();
+					contador = etiquetas.find(aux)->second;
 				}
 			}
 				break;
 			case 11: { //JZERO
-				if (programa[contador].Getexpresion()[0] == '=') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
-				} else if (programa[contador].Getexpresion()[0] == '*') {
-					acumulador = int(programa[contador].Getexpresion()[1]);
-				} else if (int(programa[contador].Getexpresion()[0]) >= 0) {
-
+				if (acumulador == 0) {
+					aux = programa[contador].Getexpresion();
+					contador = etiquetas.find(aux)->second;
 				}
 			}
 				break;
@@ -255,12 +331,25 @@ int RAM::ejecutar(int* cinta_entrada) {
 			}
 		} else
 			contador = etiquetas[programa[contador].GetpreEtiqueta()];
+		mostrar_cinta_entrada();
 	}
-	return acumulador;
+	cout << acumulador << endl;
 }
 void RAM::rellenarMapaInstrucciones() {
-	instrucciones["LOAD"] = 1;
-	instrucciones["STORE"] = 2;
+	instrucciones.insert(pair<string, int>("LOAD", 1));
+	instrucciones.insert(pair<string, int>("STORE", 2));
+	instrucciones.insert(pair<string, int>("ADD", 3));
+	instrucciones.insert(pair<string, int>("SUB", 4));
+	instrucciones.insert(pair<string, int>("MULT", 5));
+	instrucciones.insert(pair<string, int>("DIV", 6));
+	instrucciones.insert(pair<string, int>("READ", 7));
+	instrucciones.insert(pair<string, int>("WRITE", 8));
+	instrucciones.insert(pair<string, int>("JUMP", 9));
+	instrucciones.insert(pair<string, int>("JGTZ", 10));
+	instrucciones.insert(pair<string, int>("JZERO", 11));
+	instrucciones.insert(pair<string, int>("HALT", 12));
+
+	/*instrucciones["STORE"] = 2;
 	instrucciones["ADD"] = 3;
 	instrucciones["SUB"] = 4;
 	instrucciones["MULT"] = 5;
@@ -270,14 +359,36 @@ void RAM::rellenarMapaInstrucciones() {
 	instrucciones["JUMP"] = 9;
 	instrucciones["JGTZ"] = 10;
 	instrucciones["JZERO"] = 11;
-	instrucciones["HALT"] = 12;
+	instrucciones["HALT"] = 12;*/
+
 }
 /*
  * MUESTRA EL PROGRAMA
  */
 void RAM::mostrarCarga() {
 
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < programa.size(); i++)
 		programa[i].mostrar();
 
+}
+
+void RAM::mostrar_cinta_entrada() {
+	cout << "Cinta entrada: " << endl;
+	for (int i = 0; i < cinta_entrada.size(); i++) {
+		cout << cinta_entrada[i] << " ";
+	}
+}
+
+void RAM::mostrar_cinta_salida() {
+	cout << "Cinta salida: " << endl;
+	for (int i = 0; i < cinta_salida.size(); i++) {
+		cout << cinta_salida[i] << " ";
+	}
+}
+
+void RAM::mostrarEtiquetas() {
+
+	map<string,int>::iterator it = etiquetas.begin();
+	for (it = etiquetas.begin(); it != etiquetas.end(); ++it)
+		std::cout << it->first << " => " << it->second << '\n';
 }

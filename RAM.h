@@ -13,6 +13,7 @@
 #include <fstream> 
 #include <cstring>
 #include <map>
+#include <vector>
 using namespace std;
 
 class instruccion {
@@ -46,15 +47,21 @@ class RAM {
 
 private:
 
-	instruccion* programa;
+	vector<instruccion> programa;
+	vector<int> cinta_entrada;
+	vector<int> cinta_salida;
+	string nombre_fichero_salida;
 	map<string, int> etiquetas;
 	map<string, int> instrucciones;
 
 public:
 
-	RAM(const char* fichero);
+	RAM(const char* fichero, const char* c_e, string c_s);
 	~RAM();
 	void mostrarCarga();
-	int ejecutar(int* cinta_entrada);
+	void mostrar_cinta_entrada();
+	void mostrar_cinta_salida();
+	void ejecutar();
 	void rellenarMapaInstrucciones();
+	void mostrarEtiquetas();
 };

@@ -1,9 +1,12 @@
-Lee de la cinta de entrada un n£mero "n"
-; A continuaci¢n lee "n" n£meros y los almacena en el array
+Lee de la cinta de entrada un nï¿½mero "n"
+; A continuaciï¿½n lee "n" nï¿½meros y los almacena en el array
 ; Multiplica cada elemento del array por si mismo.
           READ 1                ; leer n   <- r1
           LOAD =3               ; j <- r2
           STORE 2
-          
+          READ *2               ; lee a[0] <- r3
+          JUMP algo
           LOAD 1                ; n = n - 1
+          SUB =1
+          STORE 1
 algo:	  HALT
