@@ -13,8 +13,8 @@ int main() {
 
 	int size = 30;
 	char fichero[size];
-
-	cout << "Introduzca el fichero que desea abrir: ";
+	int cintaEntrada[8] = { 1, 1, 1, 0, 0, 0, 0, 0 };
+	cout << "Introduzca el fichero que desea abrir: " << endl;
 	fgets(fichero, size, stdin);
 	/* Buscar la captura del retorno de carro para convertirlo en el "final de cadena"
 	 * Corrige el resultado de fgets.*/
@@ -25,7 +25,8 @@ int main() {
 	cout << endl;
 
 	RAM maquina(fichero);
-	maquina.mostrarCarga();
+	//maquina.mostrarCarga();
+	cout << maquina.ejecutar(cintaEntrada) << endl;
 	return 0;
 
 }

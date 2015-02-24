@@ -37,19 +37,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: maquina_ram
+all: maquina_ram.exe
 
 # Tool invocations
-maquina_ram: $(OBJS) $(USER_OBJS)
+maquina_ram.exe: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: Cross G++ Linker'
-	g++  -o "maquina_ram" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: Cygwin C++ Linker'
+	g++  -o "maquina_ram.exe" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) maquina_ram
+	-$(RM) $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) maquina_ram.exe
 	-@echo ' '
 
 .PHONY: all clean dependents

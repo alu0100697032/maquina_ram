@@ -12,7 +12,7 @@
 #include <string>
 #include <fstream> 
 #include <cstring>
-
+#include <map>
 using namespace std;
 
 class instruccion {
@@ -47,10 +47,14 @@ class RAM {
 private:
 
 	instruccion* programa;
+	map<string, int> etiquetas;
+	map<string, int> instrucciones;
 
 public:
 
 	RAM(const char* fichero);
 	~RAM();
 	void mostrarCarga();
+	int ejecutar(int* cinta_entrada);
+	void rellenarMapaInstrucciones();
 };
